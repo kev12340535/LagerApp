@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Lager App – Einfach</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- PWA / iOS Meta -->
+  <meta name="theme-color" content="#05060a">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Lager">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <style>
+    :root {
+      --bg: #05060a;
+      --bg-elevated: #101320;
+      --bg-soft: #151827;
+      --accent: #3ea6ff;
+      --accent-soft: rgba(62,166,255,0.22);
+      --accent-strong: #7fc4ff;
+      --danger: #ff4b5c;
+      --text: #f5f7ff;
+      --text-soft: #c0c4dd;
+      --border: #262b3a;
+      --radius: 12px;
+      --radius-pill: 999px;
+      --shadow: 0 14px 32px rgba(0,0,0,0.65);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background: radial-gradient(circle at top, #171c2b 0, #05060a 40%, #020309 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 980px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top, #4caf50, #2a6a38 60%, #071208);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #eafff1;
+      font-weight: 800;
+      font-size: 20px;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 10px 22px rgba(0,0,0,0.9);
+    }
+
+    .title-text h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .title-text span {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .badge {
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(99,255,174,0.7);
+      background: rgba(26,190,120,0.15);
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #c9ffe4;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #59ffb0;
+      box-shadow: 0 0 6px #59ffb0;
+    }
+
+    .card-main {
+      background: rgba(8,11,22,0.96);
+      border-radius: 18px;
+      border: 1px solid rgba(100,130,255,0.18);
+      box-shadow: var(--shadow);
+      padding: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: minmax(0,1fr);
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .card {
+      background: var(--bg-elevated);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 10px;
+    }
+
+    h2 {
+      margin: 0 0 4px;
+      font-size: 16px;
+    }
+
+    h3 {
+      margin: 0 0 4px;
+      font-size: 13px;
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-bottom: 8px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-bottom: 3px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(7,9,18,0.96);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(160,170,205,0.7);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(62,166,255,0.75);
+      box-shadow: 0 0 0 1px rgba(62,166,255,0.5);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .row-2 {
+        grid-template-columns: minmax(0,1fr);
+      }
+    }
+
+    .btn {
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top left, rgba(62,166,255,0.32), rgba(8,11,24,1));
+      color: var(--text);
+      padding: 7px 14px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+    }
+
+    .btn-ghost {
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: rgba(7,9,18,0.96);
+      color: var(--text-soft);
+      padding: 6px 12px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .btn-danger {
+      border-color: rgba(255,75,92,0.7);
+      background: radial-gradient(circle at top, rgba(255,75,92,0.45), rgba(21,6,10,1));
+      color: #ffe6eb;
+    }
+
+    .btn-small {
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: rgba(7,9,18,0.96);
+      color: var(--text-soft);
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
+
+    .btn:active,
+    .btn-ghost:active,
+    .btn-small:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.8);
+    }
+
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-soft);
+      user-select: none;
+    }
+
+    .toggle input {
+      display: none;
+    }
+
+    .toggle-pill {
+      width: 38px;
+      height: 20px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #090c16;
+      position: relative;
+    }
+
+    .toggle-knob {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #dde3ff;
+      top: 1px;
+      left: 1px;
+      transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+      box-shadow: 0 0 6px rgba(0,0,0,0.6);
+    }
+
+    .toggle input:checked + .toggle-pill {
+      background: linear-gradient(90deg, #4caf50, #3ea6ff);
+      border-color: rgba(115,255,189,0.95);
+      box-shadow: 0 0 10px rgba(62,166,255,0.7);
+    }
+
+    .toggle input:checked + .toggle-pill .toggle-knob {
+      transform: translateX(18px);
+      background: #05100a;
+    }
+
+    .photo-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .photo-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top, #262b3f, #080912 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--text-soft);
+      overflow: hidden;
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .summary-card {
+      flex: 1;
+      min-width: 120px;
+      background: radial-gradient(circle at top left, rgba(62,166,255,0.24), rgba(8,11,24,1));
+      border-radius: var(--radius);
+      border: 1px solid rgba(90,140,255,0.6);
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+
+    .summary-card span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .summary-value {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .search-wrap input {
+      padding-left: 26px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .list {
+      max-height: 60vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .item-row {
+      background: linear-gradient(90deg, rgba(12,15,30,1), rgba(7,9,18,1));
+      border-radius: 10px;
+      border: 1px solid rgba(70,90,145,0.8);
+      padding: 7px 8px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .item-main {
+      min-width: 0;
+    }
+
+    .item-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .item-name {
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-sub {
+      font-size: 11px;
+      color: var(--text-soft);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chip {
+      font-size: 10px;
+      padding: 3px 7px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: rgba(5,7,14,0.9);
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chip-flag {
+      border-color: rgba(255,215,0,0.7);
+      background: rgba(255,215,0,0.08);
+      color: #ffeaa6;
+    }
+
+    .qty {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: var(--radius-pill);
+      background: rgba(50,200,130,0.12);
+      border: 1px solid rgba(80,240,170,0.7);
+      color: #c5ffe8;
+    }
+
+    .empty {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-soft);
+      padding: 14px 6px;
+    }
+
+    .col-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .backup-note {
+      font-size: 11px;
+      color: var(--text-soft);
+      line-height: 1.4;
+    }
+
+    .backup-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="title-wrap">
+      <div class="app-icon">L</div>
+      <div class="title-text">
+        <h1>Lager App</h1>
+        <span>Einfache, lokale Bestandsverwaltung</span>
+      </div>
+    </div>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      <span>Offline · Nur dieses Gerät</span>
+    </div>
+  </header>
+
+  <div class="card-main">
+    <div class="grid">
+      <!-- Formular -->
+      <div class="card">
+        <h2>Artikel anlegen / bearbeiten</h2>
+        <div class="subtitle">Felder ausfüllen und speichern – Foto ist optional.</div>
+
+        <form id="item-form">
+          <input type="hidden" id="item-id">
+
+          <div>
+            <label for="item-name">Artikelname *</label>
+            <input id="item-name" type="text" required placeholder="z.B. Winterjacke, Bohrmaschine …">
+          </div>
+
+          <div class="row-2" style="margin-top:6px;">
+            <div>
+              <label for="item-sku">Artikelnummer</label>
+              <input id="item-sku" type="text" placeholder="z.B. EAN, interne Nummer …">
+            </div>
+            <div>
+              <label for="item-size">Größe</label>
+              <input id="item-size" type="text" placeholder="z.B. M, 42, 1L …">
+            </div>
+          </div>
+
+          <div class="row-2" style="margin-top:6px;">
+            <div>
+              <label for="item-condition">Zustand</label>
+              <select id="item-condition">
+                <option value="">– auswählen –</option>
+                <option value="Neu">Neu</option>
+                <option value="Gebraucht">Gebraucht</option>
+              </select>
+            </div>
+            <div>
+              <label for="item-where">Wo gekauft</label>
+              <input id="item-where" type="text" placeholder="z.B. Vinted, eBay, Store …">
+            </div>
+          </div>
+
+          <div class="row-2" style="margin-top:6px;">
+            <div>
+              <label for="item-qty">Menge *</label>
+              <input id="item-qty" type="number" min="1" step="1" value="1">
+            </div>
+            <div>
+              <label for="item-price">Einkaufspreis pro Stück (€)</label>
+              <input id="item-price" type="number" min="0" step="0.01" placeholder="z.B. 19.99">
+            </div>
+          </div>
+
+          <div style="margin-top:6px;">
+            <label for="item-date">Wann gekauft</label>
+            <input id="item-date" type="date">
+          </div>
+
+          <div style="margin-top:6px;">
+            <label for="item-notes">Notiz</label>
+            <textarea id="item-notes" placeholder="Besonderheiten, Zustand, Seriennummer …"></textarea>
+          </div>
+
+          <div style="margin-top:6px;">
+            <label>Foto (optional)</label>
+            <div class="photo-row">
+              <div class="photo-preview" id="photo-preview">kein Foto</div>
+              <div style="flex:1;">
+                <input id="item-photo" type="file" accept="image/*" capture="environment">
+                <div style="font-size:11px;color:var(--text-soft);margin-top:2px;">
+                  Foto bleibt nur lokal auf diesem Gerät. Keine Cloud.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <label class="toggle">
+              <input type="checkbox" id="item-flagged">
+              <span class="toggle-pill"><span class="toggle-knob"></span></span>
+              <span>Artikel markieren (wichtig)</span>
+            </label>
+
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button type="button" class="btn-ghost" id="btn-reset">Neu / Formular leeren</button>
+              <button type="submit" class="btn">💾 Speichern</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Übersicht -->
+      <div class="card">
+        <h2>Lagerübersicht</h2>
+        <div class="subtitle">Artikel, Mengen und Einkaufswert im Blick.</div>
+
+        <div class="summary">
+          <div class="summary-card">
+            <span>Artikel (Positionen)</span>
+            <div class="summary-value" id="sum-items">0</div>
+          </div>
+          <div class="summary-card">
+            <span>Gesamtmenge</span>
+            <div class="summary-value" id="sum-qty">0</div>
+          </div>
+          <div class="summary-card">
+            <span>Gesamter Einkaufswert</span>
+            <div class="summary-value" id="sum-value">0,00 €</div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input id="search" type="text" placeholder="Suche nach Name, Artikelnummer, Zustand, wo gekauft …">
+          </div>
+          <button class="btn-ghost" id="btn-sort">Sortierung: Kaufdatum (neu zuerst)</button>
+        </div>
+
+        <div class="list" id="item-list">
+          <div class="empty">Noch keine Artikel angelegt.</div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <h3>Backup & Export</h3>
+          <div class="backup-note">
+            Daten werden automatisch auf diesem Gerät gespeichert (localStorage).
+            Optional kannst du ein Backup als Datei sichern oder wieder importieren.
+          </div>
+          <div class="backup-actions">
+            <button class="btn-ghost" id="btn-export-json">⬇️ Backup (JSON)</button>
+            <button class="btn-ghost" id="btn-export-csv">⬇️ Export (CSV)</button>
+            <label class="btn-ghost">
+              ⬆️ Backup laden
+              <input type="file" id="import-json" accept="application/json,.json" style="display:none;">
+            </label>
+            <button class="btn-ghost btn-danger" id="btn-clear-all">🗑️ Alles löschen</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'lager_simple_v1';
+let items = [];
+
+// --- Speicher ---
+function loadItems() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data)) return [];
+    return data;
+  } catch (e) {
+    console.error('Fehler beim Laden', e);
+    return [];
+  }
+}
+
+function saveItems() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
+function genId() {
+  return 'itm_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+}
+
+// --- DOM-Elemente ---
+const form = document.getElementById('item-form');
+const idInput = document.getElementById('item-id');
+const nameInput = document.getElementById('item-name');
+const skuInput = document.getElementById('item-sku');
+const sizeInput = document.getElementById('item-size');
+const condInput = document.getElementById('item-condition');
+const whereInput = document.getElementById('item-where');
+const qtyInput = document.getElementById('item-qty');
+const priceInput = document.getElementById('item-price');
+const dateInput = document.getElementById('item-date');
+const notesInput = document.getElementById('item-notes');
+const photoInput = document.getElementById('item-photo');
+const flaggedInput = document.getElementById('item-flagged');
+const preview = document.getElementById('photo-preview');
+const resetBtn = document.getElementById('btn-reset');
+const listEl = document.getElementById('item-list');
+const searchInput = document.getElementById('search');
+const sortBtn = document.getElementById('btn-sort');
+const sumItemsEl = document.getElementById('sum-items');
+const sumQtyEl = document.getElementById('sum-qty');
+const sumValueEl = document.getElementById('sum-value');
+const exportJsonBtn = document.getElementById('btn-export-json');
+const exportCsvBtn = document.getElementById('btn-export-csv');
+const importJsonInput = document.getElementById('import-json');
+const clearAllBtn = document.getElementById('btn-clear-all');
+
+let currentPhoto = null;
+let sortMode = 'date-desc';
+let searchTerm = '';
+
+// --- Formular / Foto ---
+function resetForm() {
+  idInput.value = '';
+  nameInput.value = '';
+  skuInput.value = '';
+  sizeInput.value = '';
+  condInput.value = '';
+  whereInput.value = '';
+  qtyInput.value = '1';
+  priceInput.value = '';
+  dateInput.value = '';
+  notesInput.value = '';
+  flaggedInput.checked = false;
+  currentPhoto = null;
+  photoInput.value = '';
+  updatePreview();
+}
+
+function updatePreview() {
+  preview.innerHTML = '';
+  if (!currentPhoto) {
+    preview.textContent = 'kein Foto';
+  } else {
+    const img = document.createElement('img');
+    img.src = currentPhoto;
+    preview.appendChild(img);
+  }
+}
+
+photoInput.addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) {
+    currentPhoto = null;
+    updatePreview();
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    currentPhoto = ev.target.result;
+    updatePreview();
+  };
+  reader.readAsDataURL(file);
+});
+
+resetBtn.addEventListener('click', () => {
+  resetForm();
+});
+
+// --- Speichern ---
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = nameInput.value.trim();
+  if (!name) {
+    alert('Bitte einen Artikelnamen eingeben.');
+    return;
+  }
+  let qty = parseInt(qtyInput.value, 10);
+  if (!qty || qty < 1) qty = 1;
+  let price = priceInput.value ? parseFloat(priceInput.value) : null;
+  if (price !== null && (isNaN(price) || price < 0)) price = null;
+
+  const item = {
+    id: idInput.value || genId(),
+    name,
+    sku: skuInput.value.trim(),
+    size: sizeInput.value.trim(),
+    condition: condInput.value || '',
+    where: whereInput.value.trim(),
+    qty,
+    price,
+    date: dateInput.value || '',
+    notes: notesInput.value.trim(),
+    photo: currentPhoto,
+    flagged: !!flaggedInput.checked,
+    createdAt: '',
+    updatedAt: new Date().toISOString()
+  };
+
+  const existingIndex = items.findIndex(i => i.id === item.id);
+  if (existingIndex === -1) {
+    item.createdAt = new Date().toISOString();
+
+    if (item.sku) {
+      const dup = items.find(i => i.sku === item.sku);
+      if (dup) {
+        if (!confirm('Es existiert bereits ein Artikel mit dieser Artikelnummer. Trotzdem speichern?')) {
+          return;
+        }
+      }
+    }
+    items.push(item);
+  } else {
+    item.createdAt = items[existingIndex].createdAt || '';
+    items[existingIndex] = item;
+  }
+
+  saveItems();
+  resetForm();
+  render();
+});
+
+// --- Suche / Sortierung ---
+function applySearchAndSort(arr) {
+  let res = arr.slice();
+  if (searchTerm) {
+    const t = searchTerm.toLowerCase();
+    res = res.filter(it => {
+      return [
+        it.name,
+        it.sku,
+        it.size,
+        it.condition,
+        it.where,
+        it.notes
+      ].join(' ').toLowerCase().includes(t);
+    });
+  }
+
+  res.sort((a, b) => {
+    let da = a.date || a.createdAt || '';
+    let db = b.date || b.createdAt || '';
+    if (sortMode === 'date-desc') {
+      return (db || '').localeCompare(da || '');
+    } else if (sortMode === 'date-asc') {
+      return (da || '').localeCompare(db || '');
+    } else {
+      return a.name.localeCompare(b.name, 'de', {sensitivity:'base'});
+    }
+  });
+
+  return res;
+}
+
+sortBtn.addEventListener('click', () => {
+  if (sortMode === 'date-desc') {
+    sortMode = 'date-asc';
+    sortBtn.textContent = 'Sortierung: Kaufdatum (alt zuerst)';
+  } else if (sortMode === 'date-asc') {
+    sortMode = 'name';
+    sortBtn.textContent = 'Sortierung: Name (A–Z)';
+  } else {
+    sortMode = 'date-desc';
+    sortBtn.textContent = 'Sortierung: Kaufdatum (neu zuerst)';
+  }
+  render();
+});
+
+searchInput.addEventListener('input', (e) => {
+  searchTerm = e.target.value.trim();
+  render();
+});
+
+// --- Formular füllen beim Bearbeiten ---
+function fillForm(item) {
+  idInput.value = item.id;
+  nameInput.value = item.name || '';
+  skuInput.value = item.sku || '';
+  sizeInput.value = item.size || '';
+  condInput.value = item.condition || '';
+  whereInput.value = item.where || '';
+  qtyInput.value = item.qty || 1;
+  priceInput.value = (item.price != null && !isNaN(item.price)) ? item.price : '';
+  dateInput.value = item.date || '';
+  notesInput.value = item.notes || '';
+  flaggedInput.checked = !!item.flagged;
+  currentPhoto = item.photo || null;
+  updatePreview();
+}
+
+// --- Rendering ---
+function render() {
+  const totalItems = items.length;
+  let totalQty = 0;
+  let totalValue = 0;
+  items.forEach(it => {
+    const q = it.qty || 0;
+    totalQty += q;
+    if (it.price != null && !isNaN(it.price)) {
+      totalValue += q * it.price;
+    }
+  });
+  sumItemsEl.textContent = totalItems.toString();
+  sumQtyEl.textContent = totalQty.toString();
+  sumValueEl.textContent = totalValue.toFixed(2).replace('.', ',') + ' €';
+
+  const data = applySearchAndSort(items);
+  listEl.innerHTML = '';
+  if (!data.length) {
+    const div = document.createElement('div');
+    div.className = 'empty';
+    div.textContent = 'Keine Artikel gefunden.';
+    listEl.appendChild(div);
+    return;
+  }
+
+  data.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'item-row';
+
+    const main = document.createElement('div');
+    main.className = 'item-main';
+
+    const titleRow = document.createElement('div');
+    titleRow.className = 'item-title-row';
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'item-name';
+    nameEl.textContent = item.name;
+
+    const qtyEl = document.createElement('div');
+    qtyEl.className = 'qty';
+    qtyEl.textContent = '× ' + (item.qty || 0);
+
+    titleRow.appendChild(nameEl);
+    titleRow.appendChild(qtyEl);
+
+    const sub = document.createElement('div');
+    sub.className = 'item-sub';
+    const parts = [];
+    if (item.sku) parts.push('Art.-Nr.: ' + item.sku);
+    if (item.condition) parts.push(item.condition);
+    if (item.where) parts.push('gekauft: ' + item.where);
+    sub.textContent = parts.join(' · ') || 'keine weiteren Angaben';
+
+    const meta = document.createElement('div');
+    meta.style.display = 'flex';
+    meta.style.flexWrap = 'wrap';
+    meta.style.gap = '4px';
+    meta.style.marginTop = '2px';
+
+    if (item.date) {
+      const chipDate = document.createElement('div');
+      chipDate.className = 'chip';
+      chipDate.textContent = 'gekauft am ' + item.date;
+      meta.appendChild(chipDate);
+    }
+    if (item.price != null && !isNaN(item.price)) {
+      const chipVal = document.createElement('div');
+      chipVal.className = 'chip';
+      const total = (item.price * (item.qty || 0)).toFixed(2).replace('.', ',');
+      chipVal.textContent = 'Einkauf: ' + item.price.toFixed(2).replace('.', ',') + ' € / gesamt ' + total + ' €';
+      meta.appendChild(chipVal);
+    }
+    if (item.flagged) {
+      const chipFlag = document.createElement('div');
+      chipFlag.className = 'chip chip-flag';
+      chipFlag.textContent = '★ markiert';
+      meta.appendChild(chipFlag);
+    }
+
+    main.appendChild(titleRow);
+    main.appendChild(sub);
+    main.appendChild(meta);
+
+    const actions = document.createElement('div');
+    actions.className = 'col-actions';
+
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'btn-small';
+    editBtn.textContent = 'Bearbeiten';
+    editBtn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      fillForm(item);
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'btn-small';
+    delBtn.textContent = 'Löschen';
+    delBtn.style.borderColor = 'rgba(255,75,92,0.7)';
+    delBtn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      if (confirm('Diesen Artikel wirklich löschen?')) {
+        items = items.filter(it => it.id !== item.id);
+        saveItems();
+        render();
+      }
+    });
+
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
+
+    row.appendChild(main);
+    row.appendChild(actions);
+
+    row.addEventListener('click', () => {
+      fillForm(item);
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+
+    listEl.appendChild(row);
+  });
+}
+
+// --- Export / Import ---
+exportJsonBtn.addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(items, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = 'lager-backup-' + date + '.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+function toCsvValue(v) {
+  if (v === null || v === undefined) return '';
+  const s = String(v).replace(/"/g, '""');
+  if (s.search(/("|;|\n)/g) >= 0) return '"' + s + '"';
+  return s;
+}
+
+exportCsvBtn.addEventListener('click', () => {
+  const header = [
+    'ID','Name','Artikelnummer','Zustand','Größe','Wo gekauft',
+    'Menge','Einkaufspreis','Gesamtwert','Wann gekauft',
+    'Notiz','Markiert'
+  ];
+  const rows = [header.join(';')];
+  items.forEach(it => {
+    const qty = it.qty || 0;
+    const price = (it.price != null && !isNaN(it.price)) ? it.price : 0;
+    const total = qty * price;
+    const row = [
+      it.id,
+      it.name,
+      it.sku || '',
+      it.condition || '',
+      it.size || '',
+      it.where || '',
+      qty,
+      price ? price.toFixed(2).replace('.', ',') : '',
+      total ? total.toFixed(2).replace('.', ',') : '',
+      it.date || '',
+      it.notes || '',
+      it.flagged ? 'ja' : 'nein'
+    ].map(toCsvValue);
+    rows.push(row.join(';'));
+  });
+  const blob = new Blob([rows.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = 'lager-export-' + date + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+importJsonInput.addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) {
+        alert('Die Datei enthält kein gültiges Format.');
+        return;
+      }
+      const map = new Map();
+      items.forEach(it => map.set(it.id, it));
+      data.forEach(it => {
+        if (it && it.id) {
+          map.set(it.id, it);
+        }
+      });
+      items = Array.from(map.values());
+      saveItems();
+      render();
+      alert('Backup wurde eingelesen. Einträge in Datei: ' + data.length);
+    } catch (err) {
+      console.error(err);
+      alert('Fehler beim Einlesen: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  importJsonInput.value = '';
+});
+
+clearAllBtn.addEventListener('click', () => {
+  if (!items.length) {
+    alert('Es sind aktuell keine Daten gespeichert.');
+    return;
+  }
+  if (confirm('Wirklich alle Artikel löschen? (Backups bleiben erhalten)')) {
+    items = [];
+    saveItems();
+    resetForm();
+    render();
+  }
+});
+
+// --- Init ---
+items = loadItems();
+updatePreview();
+render();
+
+// --- PWA / Service Worker ---
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => {
+      console.error('Service Worker Fehler', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
